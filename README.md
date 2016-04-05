@@ -27,6 +27,8 @@ The above document provides detailed steps on
 - people.json 
   - A sample json file
   - Input data for SparkR jobs used in sparkr.ipynb notebook
+- altiscale_logo.png 
+  - Altiscale logo accessed in the Jupyter notebooks
 
 ## Author
 
