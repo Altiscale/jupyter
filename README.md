@@ -6,17 +6,29 @@ This repo includes sample Jupyter notebooks with PySpark and SparkR kernels.
 
 https://documentation.altiscale.com/jupyter
 
-The above document provides steps to install Jupyter and integrating with PySpark and SparkR kernels.
+The above document provides detailed steps on
+* creating a python virtual environment using anconda
+* installing Jupyter 
+* creating PySpark kernel and integrating with Jupyter notebook
+* integrating SparkR to Jupyter notebook
 
 ## Files
 
-- pyspark.ipynb (demos PySpark via Jupyter on Altiscale platform)
-- 201508_trip_data.json.gz (open dataset of Bay Area Bike Share system available at http://www.bayareabikeshare.com/open-data. This dataset is used as input data in pyspark.ipynb notebook. Unzip the data once it's downloaded. For ex: gunzip 201508_trip_data.json.gz)
+- pyspark.ipynb 
+  - Demos PySpark jobs via Jupyter on Altiscale platform
+  - Uses PySpark kernel configured in the above step
+- 201508_trip_data.json.gz 
+  - Bay Area Bike Share system's [open dataset](http://www.bayareabikeshare.com/open-data).
+  - Input data for PySpark jobs used in pyspark.ipynb notebook. 
+  - Unzip the data once it's downloaded. For ex: ``gunzip 201508_trip_data.json.gz``
+- sparkr.ipynb 
+  - Demos SparkR jobs via Jupyter on Altiscale platform
+  - Uses R kernel integrated with SparkR configuration
+- people.json 
+  - A sample json file
+  - Input data for SparkR jobs used in sparkr.ipynb notebook
 
-- sparkr.ipynb (demos SparkR via Jupyter on Altiscale platform)
-- people.json (it's a sample json file)
-
-## Authors
+## Author
 
 - Bala Krishna Gangisetty (bala@altiscale.com)
 
