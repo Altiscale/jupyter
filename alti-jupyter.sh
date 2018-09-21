@@ -157,7 +157,7 @@ function checkRetVal() {
 function checkAndSetSparkEnv() {
     # first, figure out Spark version on this workbench
     echo "Checking Spark version"
-    if [[ ! $SPARK_VERSION =~ 1\.6\.? ]] && [[ ! $SPARK_VERSION =~ 2\.0\.[012] ]]; then
+    if [[ ! $SPARK_VERSION =~ 1\.6\.? ]] && [[ ! $SPARK_VERSION =~ 2\.0\.[012] ]] && [[ ! $SPARK_VERSION =~ 2\.1\.1 ]]; then
 	echo "ERROR - Invalid Spark version: $SPARK_VERSION"
         echo "Use one of the installed Spark versions on the cluster, verify \"ll -d /opt/alti-spark*\""
 	exit 1
@@ -290,15 +290,20 @@ EOF
 	/bin/mkdir -p $PYSPARK_KERNEL_DIR
 	checkRetVal
     fi
-
+    
+    # check Spark version and generate config 
+    if [[ $spark_version == 2\.[123]\.? ]]; then
+        spark_hive_conf="--driver-class-path $MY_SPARK_CONF_DIR/hive-site.xml:$hive_jars_colon --conf spark.executor.extraClassPath=./hive/* --conf spark.yarn.dist.archives=hdfs:///user/$USER/apps/hive-1.2.1-lib.zip#hive"
+    else
+        spark_hive_conf="--driver-class-path $MY_SPARK_CONF_DIR/hive-site.xml:$hive_jars_colon --conf spark.executor.extraClassPath=./hive/* --files $MY_SPARK_CONF_DIR/hive-site.xml --conf spark.yarn.dist.archives=hdfs:///user/$USER/apps/hive-1.2.1-lib.zip#hive"
+    fi
+    
     # ------------------
     # create kernel file
     
     if [[ -z "$CONDA_CUSTOM_VENVNAME" ]] ; then
-	
 	echo "Creating default $PYSPARK_KERNEL_FILE"
-	spark_hive_conf="--driver-class-path $MY_SPARK_CONF_DIR/hive-site.xml:$hive_jars_colon --conf spark.executor.extraClassPath=./hive/* --files $MY_SPARK_CONF_DIR/hive-site.xml --conf spark.yarn.dist.archives=hdfs:///user/$USER/apps/hive-1.2.1-lib.zip#hive" 
- 	cat <<EOF > $PYSPARK_KERNEL_FILE
+	cat <<EOF > $PYSPARK_KERNEL_FILE
 {
 "display_name": "${JUPYTER_KERNEL_DISPLAY_NAME:-PySpark kernel=$JUPYTER_KERNEL_NAME (Spark $spark_version)}",
 "language": "python",
@@ -342,9 +347,12 @@ EOF
 	    echo "Can't find $anaconda_venvpython_home"
 	    exit 1
 	fi
-
-	# --archives override spark.yarn.dist.archives
-	spark_hive_conf="--driver-class-path /etc/spark/hive-site.xml:$hive_jars_colon --conf spark.executor.extraClassPath=./hive/* --files /etc/spark/hive-site.xml"
+        # Check Spark version and generate config. Note that --archives override spark.yarn.dist.archives
+        if [[ $spark_version == 2\.[123]\.? ]]; then
+            spark_hive_conf="--driver-class-path /etc/spark/hive-site.xml:$hive_jars_colon --conf spark.executor.extraClassPath=./hive/*"
+        else
+            spark_hive_conf="--driver-class-path /etc/spark/hive-site.xml:$hive_jars_colon --conf spark.executor.extraClassPath=./hive/* --files /etc/spark/hive-site.xml"
+        fi
 	echo "Creating custom $PYSPARK_KERNEL_FILE, spark python runtime path is $anaconda_venvpython"
 	cat <<EOF > $PYSPARK_KERNEL_FILE
 {	
